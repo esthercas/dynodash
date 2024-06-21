@@ -11,7 +11,7 @@ export class DashboardsService {
   ) {}
 
   /**
-   * Esta funcion inserta un documento Dashboard en la coleccion Dashboards
+   * Inserts a dashboard in the dashboard's collection
    * @param dashboard
    * @returns
    */
@@ -27,6 +27,8 @@ export class DashboardsService {
     return dashboardToinsert.save();
   }
 
+
+
   /**
    * Retrieve a dashboard from database for a given code (id)
    * @param id
@@ -38,6 +40,8 @@ export class DashboardsService {
       .lean();
     return dashboardInstance;
   }
+
+
 
   /**
    * Updates dashboard's content
@@ -52,6 +56,8 @@ export class DashboardsService {
     );
   }
 
+
+
   /**
    * Updates a widget in the dashboard widget's array
    * @param dashboardId ID of the container dashboard
@@ -63,7 +69,7 @@ export class DashboardsService {
   async updateWidget(dashboardId: string, widget: DashboardWidgetDTO) {
     //console.log("Dashboard buscado: ", dashboardId)
     const instance = await this.dashboardModel.findOne({ name: dashboardId });
-    //console.log("Dashboard encontrado: ", instance)
+    // console.log("Dashboard encontrado: ", instance)
     const f = widget.frame;
     const o = widget.order;
     widget.frame = widget.newFrame;
@@ -71,7 +77,7 @@ export class DashboardsService {
     delete widget.newFrame;
     delete widget.newOrder;
     widget.doc = Buffer.from(widget.doc).toString('base64');
-    //console.log("Widget transformado: ", widget)
+    // console.log("Widget transformado: ", widget)
     instance.widgets = instance.widgets.map((item) =>
       item.frame == f && item.order == o ? widget : item,
     );
@@ -82,6 +88,8 @@ export class DashboardsService {
     );
   }
 
+
+
   /**
    * Deletes a dashboard
    * @param id code of the dashboard to delete
@@ -90,6 +98,8 @@ export class DashboardsService {
   async deleteDashboard(id: string) {
     return await this.dashboardModel.deleteOne({ code: id });
   }
+
+
 
   /**
    * Gets the list of all dashboards
@@ -111,7 +121,6 @@ export class DashboardsService {
   async getDashboardWidget(id:string, frame: number, order:number){
     try {
       const dashboard = await this.dashboardModel.findOne({ name:id });
-      console.log("Service: Id: ",id , "Frame: ", frame, " order: ", order);
       
       if (!dashboard) {
         throw new Error ("Dashboard no encontrado");
@@ -119,7 +128,6 @@ export class DashboardsService {
 
       const widgets = dashboard.widgets;
       const widget = widgets.find(element => element.frame == frame && element.order == order);
-      console.log("El widget: ", widget);
       
       if (!widget) {
         throw new Error ("Widget no encontrado");
@@ -185,6 +193,7 @@ export class DashboardsService {
     }
   }
 
+  
   
   /**
    * Adds a widget to a dashboard

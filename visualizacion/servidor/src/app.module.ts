@@ -16,7 +16,7 @@ import { AppController } from './app.controller';
 // providers
 import { AppService } from './app.service';
 
-const db_hostname = 'localhost';
+const db_hostname = '1.44.4.82';
 const db_port = '27017';
 const db_database = 'dynodash';
 

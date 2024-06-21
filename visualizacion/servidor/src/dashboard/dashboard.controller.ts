@@ -43,9 +43,11 @@ export class DashboardController {
     @Res() res: Response,
   ) {
     try {
-      const html = await this.dbService.getHTML(dashboardId);
+      console.log("pageid", dashboardId)
+      const { html, description }= await this.dbService.getHTML(dashboardId);
       return res.render('main', {
-          html: html
+          html: html,
+          title: description,
       });
     } catch (Error) {
       console.log(Error);

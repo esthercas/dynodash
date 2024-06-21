@@ -37,7 +37,14 @@ export class DashboardService {
   async getHTML(dashboardId: string) {
     this.logger.debug("Recuperando dashboard " + dashboardId)
     //Localiza el dashboard en la DB y se extrae el campo 'template'
-    const { template, widgets } = await this.dashboardModel.findOne({
+    const object = await this.dashboardModel.findOne({
+      name: dashboardId,
+    });
+    console.log("dsds", object)
+    if(object == null) {
+      return
+    }
+    const { template, description, widgets } = await this.dashboardModel.findOne({
       name: dashboardId,
     });
 
@@ -73,12 +80,13 @@ export class DashboardService {
 
       const dashboardStruct = await this.buildDashboard ( arrayWidgets );
       javaScriptSpecific += dashboardStruct.script;
+
       //Solo es valido el array obtenido el el último loop, ya que el array estará completo con todos los nombres de widgets.
       namesScriptGeneric = dashboardStruct.libs;
       //Se introducen en una coleccion clave/value siendo la clave el frame:x y el valor el html a introducir en ese frame
       map.set(tag, dashboardStruct.html);
     }
-
+    //console.log("javascript", javaScriptSpecific)
     javaScriptGeneric = await this.buildGlobalScript( namesScriptGeneric );
 
     //construccion del JSON
@@ -92,7 +100,7 @@ export class DashboardService {
       javaScriptSpecific +
       '</script>\n' +
       javaScriptGeneric;
-    return html;
+    return {html, description};
   }
 
   
@@ -111,6 +119,7 @@ export class DashboardService {
     if (content) {
        scriptDecoded = Buffer.from(content, 'base64').toString('utf-8');
     }
+    
    return scriptDecoded;
   }
 
@@ -122,6 +131,7 @@ export class DashboardService {
    */
   async getWidget(name: string): Promise<Widget> {
     const widget = await this.widgetModel.findOne({ name: name });
+    
     return widget;
   }
 
@@ -260,7 +270,7 @@ export class DashboardService {
 
     //const tagNames = ['title', 'info', 'label', 'url', 'doc'];
     const tagNames = Object.keys(widget._doc);
-    // this.logger.debug("tagNames", tagNames);
+    this.logger.debug("tagNames", tagNames);
 
     
     for (let tag of tagNames) {
@@ -284,6 +294,8 @@ export class DashboardService {
     //Se compila la templateDecoded con el JSON
     const compiledTemplate = Handlebars.compile(templateDecoded);
     const html = compiledTemplate(frameMap);
+    this.logger.debug("-----------------------------------------------------------------")
+    console.log(html)
     return html;
   }  
 
@@ -334,7 +346,7 @@ export class DashboardService {
         script = compiledScript(frameMap);
       }
   
-      //this.logger.debug(`Construyendo script de widget ${frame} ${order}: ${url}, ${label}`)
+      this.logger.debug(`Construyendo script de widget ${frame} ${order}: ${url}, ${label}`)
       //console.log(script)
       return script;
     }

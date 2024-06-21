@@ -22,13 +22,15 @@ export class DashboardsController {
     return await this.dashboardService.getDashboardList();
   }
 
+
+
   /**
-   * 
+   * Gets the list of all dashboards
    * @returns 
    */
   @Get('list')
   @Render('dashboards/dashboardList.hbs')
-  async templateList() {
+  async DashboardList() {
     console.log('En dashboardList');
     try {
       const list = await this.dashboardService.getDashboardList();
@@ -41,7 +43,13 @@ export class DashboardsController {
   }
 
 
- //endpoint para obetener el dashboard principal del dashboard
+
+ /**
+  * Retrieve a dashboard from database for a given code (id)
+  * @param dashboardId 
+  * @param res 
+  * @returns 
+  */
  @Get('item/:id')
  async getDashboard(@Param('id') dashboardId: string, @Res() res: Response) {
 
@@ -55,23 +63,7 @@ export class DashboardsController {
  }
 
 
-  //endpoint para obetener el dashboard principal del dashboard
-  // @Get('widget/:id/:frame/:order')
-  // async getDashboardWidget(@Param('id') dashboardId: string,
-  //                          @Param('frame') frame: string, 
-  //                          @Param('order') order: string, 
-  //                          @Res() res: Response) {
-  //   try {
-  //     const dashboardInstance = await this.dashboardService.getDashboard(dashboardId);
-  //     const widgets = dashboardInstance.widgets;
-  //     const w = widgets.find(element => element.frame == frame && element.order == order);
-  //     w.doc = Buffer.from(w.doc, 'base64').toString('utf-8');
-  //     //console.log(w);
-  //     return res.send(w);
-  //   }catch(error) {
-  //     return res.status(400).send('Widget no encontrado.')
-  //   }                       
-  // }
+
   /**
    * Finds a widget in a dashboard
    * @param id 
@@ -83,7 +75,6 @@ export class DashboardsController {
   @Get('widget/:name/:frame/:order')
   async getDashboardWidget(@Param('name') name:string, @Param('frame') frame:number, @Param('order') order:number, @Res() res: Response){
     try {
-      console.log("Controller: Name", name, " frame ", frame, " order ", order);
       const widget = await this.dashboardService.getDashboardWidget(name,frame,order);
       console.log("Widget mostrado con exito");
       return res.status(200).send(widget);
@@ -93,8 +84,9 @@ export class DashboardsController {
   }
 
 
+
   /**
-   * 
+   * Renders the editor 
    * @param id 
    * @returns 
    */
@@ -112,8 +104,14 @@ export class DashboardsController {
       }
   }
 
-  //endpoint para insertar un dashboard
-  //comprobar que el data no es nulo
+
+
+  /**
+   * Inserts a dashboard in the dashboard's collection
+   * @param insertarDashboard 
+   * @param res 
+   * @returns 
+   */
   @Post('dashboard')
   //@UseFilters(new HttpExceptionFilterDB)
   async insertarDashboard(@Body() insertarDashboard: Dashboard, @Res() res: Response) {
@@ -139,7 +137,12 @@ export class DashboardsController {
 
  
 
-  //endpoint para actualizar un dashboard
+  /**
+   * Updates dashboard's content
+   * @param dashboard 
+   * @param res 
+   * @returns 
+   */
   @Put()
   async actualizarDashboard(@Body() dashboard: Dashboard, @Res() res: Response) {
     try {
@@ -156,8 +159,14 @@ export class DashboardsController {
 
 
 
-  //endpoint para obetener el dashboard principal del dashboard
-  @Put('widget/:id/')
+  /**
+   * Updates a widget in the dashboard widget's array
+   * @param dashboardId 
+   * @param widget 
+   * @param res 
+   * @returns 
+   */
+  @Put('widget/:id')
   async updateWidget(@Param('id') dashboardId: string,
                      @Body() widget: DashboardWidgetDTO,
                      @Res() res: Response) {
@@ -172,7 +181,12 @@ export class DashboardsController {
 
 
 
-  //endpoint para eliminar un dashboard
+  /**
+   * Deletes a dashboard
+   * @param dashboardId 
+   * @param res 
+   * @returns 
+   */
   @Delete(':id')
   async eliminarDashboard(@Param('id') dashboardId: string, @Res() res: Response){
     try {
